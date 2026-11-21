@@ -902,6 +902,7 @@ window.sometechOrbitFrames=[[{"points":[[1373,-834,-750],[1400,-889,-652],[1420,
   ];
   const loop = 8000;
   const orbitSize = 111;
+  const ringScale = .8;
   const verticalExtent = Math.max(...frames.flatMap(frame => frame.flatMap(ring =>
     ring.points.map(point => Math.abs(point[1]) / 1000))));
   let width = 0;
@@ -918,8 +919,8 @@ window.sometechOrbitFrames=[[{"points":[[1373,-834,-750],[1400,-889,-652],[1420,
     const position = reduced.matches ? 6 : (now % loop) / loop * (frames.length - 1);
     const index = Math.floor(position);
     const progress = position - index;
-    const xScale = Math.min(orbitSize, (width - 12) / 4.25);
-    const yScale = Math.min(orbitSize, (height / 2 - 10) / verticalExtent);
+    const xScale = Math.min(orbitSize, (width - 12) / 4.25) * ringScale;
+    const yScale = Math.min(orbitSize, (height / 2 - 10) / verticalExtent) * ringScale;
     const project = (a, b) => [
       mix(a[0], b[0], progress) / 1000 * xScale,
       mix(a[1], b[1], progress) / 1000 * yScale,
