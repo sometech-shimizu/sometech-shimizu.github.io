@@ -454,6 +454,7 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
 .star.spark::after { transform: translate(-50%, -50%) rotate(90deg); }
 .orbital-stage {
   position: relative;
+  --bubble-scale: .8;
   isolation: isolate;
   display: grid;
   place-items: center;
@@ -543,18 +544,6 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
   box-shadow: 0 0 5px 2px #78ebffd9, 0 0 22px 4px #4dcff49e;
   transform: translate(-50%, -38%);
 }
-.coordinate {
-  position: absolute;
-  width: 12px;
-  height: 12px;
-  color: #a3d8f9;
-  opacity: .62;
-  border: 1px solid currentColor;
-  border-right: 0;
-  border-bottom: 0;
-}
-.coordinate.one { top: 32%; left: 8%; }
-.coordinate.two { bottom: 29%; right: 8%; transform: rotate(180deg); }
 .hero-copy {
   position: relative;
   z-index: 1;
@@ -592,10 +581,6 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
   .orbital-stage { grid-area: auto; }
   .orbit-telemetry { width: 18rem; }
 }
-@media (max-width: 420px) {
-  .coordinate.one { left: 3%; }
-  .coordinate.two { right: 3%; }
-}
 @media (prefers-reduced-motion: reduce) {
   .star.spark, .orbit-signal, .orbit-beacon, .logo::after { animation: none; }
   .logo::after { background-position: 18% 0; }
@@ -603,11 +588,13 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
 /* Transparent light passes rendered in Blender. */
 .orbital-stage .orbit::before {
   border-color: #c5e5fd24;
+  transform: scale(var(--bubble-scale));
   background: radial-gradient(circle, transparent 62%, #a0ceff0c 87%, #b4bdf616 100%);
   box-shadow: 0 0 24px #58c3f51e, inset 0 0 7px #9ccaee10;
 }
 .orbital-stage .mix {
   z-index: 1;
+  transform: scale(var(--bubble-scale));
   isolation: isolate;
   mix-blend-mode: normal;
 }
@@ -617,6 +604,7 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
 .orbital-stage .blob { background: var(--surface) center / 100% 100% no-repeat; }
 .bubble-film {
   position: absolute;
+  transform: scale(var(--bubble-scale));
   z-index: 2;
   width: 222px;
   aspect-ratio: 1;
@@ -748,8 +736,6 @@ footer { padding: 1.85rem 0 2.2rem; color: var(--mute); font: 400 .8125rem/1.5 v
       <canvas class="blender-orbits front"></canvas>
       <div class="orbit-path"></div>
       <div class="orbit-path second"></div>
-      <span class="coordinate one"></span>
-      <span class="coordinate two"></span>
       <div class="orbit-telemetry">
         <span class="orbit-signal" style="--start:36deg"></span>
         <span class="orbit-signal warm"></span>
@@ -900,6 +886,7 @@ window.sometechOrbitFrames=[[{"points":[[1373,-834,-750],[1400,-889,-652],[1420,
   ];
   const loop = 8000;
   const orbitSize = 111;
+  const bubbleRadius = orbitSize * (Number(getComputedStyle(stage).getPropertyValue('--bubble-scale')) || 1);
   const ringScale = .8;
   const verticalExtent = Math.max(...frames.flatMap(frame => frame.flatMap(ring =>
     ring.points.map(point => Math.abs(point[1]) / 1000))));
@@ -932,7 +919,7 @@ window.sometechOrbitFrames=[[{"points":[[1373,-834,-750],[1400,-889,-652],[1420,
       ctx.lineJoin = 'round';
     });
 
-    const insideBubble = (x, y) => x * x + y * y < orbitSize * orbitSize;
+    const insideBubble = (x, y) => x * x + y * y < bubbleRadius * bubbleRadius;
     for (const [ringIndex, from] of frames[index].entries()) {
       const to = frames[index + 1][ringIndex];
       const coordinates = from.points.map((point, i) => project(point, to.points[i]));
